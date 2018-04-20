@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		button{
+			xwidth: 50px;
+			height: 40px;
+			border-radius: 5px;
+		}
+	</style>
+</head>
+<body>
+	<button onclick="showCats(getCatsSync())">cats （同步调用）</button>  <!--同步调用-->
+	<button onclick="getCatsAsync(showCats)">show cats（异步调用）</button>   <!--异步调用 -->
+	<div id="container"></div>
+</body>
+<script type="text/javascript">
+	function getCatsSync(){
+		var req=new XMLHttpRequest()
+		req.open('GET','https://xieranmaya.github.io/images/cats/cats.json',false)
+		req.send() 
+		return JSON.parse(req.responseText)
+	}
+
+	function getCatsAsync(callback){
+		var req=new XMLHttpRequest()
+		req.open('GET','https://xieranmaya.github.io/images/cats/cats.json')
+		req.addEventListener('load',function(){
+			callback(JSON.parse(req.responseText))
+		})
+		req.send()
+	}
+	function showCats(cats){
+		container.innerHTML=cats.map(it=> `<img src="https://xieranmaya.github.io/images/cats/${it.url}">`).join('')
+	}
+
+
+	function getCats(callback){
+		get('https://xieranmaya.github.io/images/cats/cats.json',callback)
+	}
+
+
+
+
+	function get(url,callback){
+		var req=new XMLHttpRequest()
+		req.open('GET',url)
+		req.addEventListener('load',function(){
+			try{
+				callback(JSON.parse(req.responseText))
+			}catch(e){
+				console.log(e)
+				callback(req.responseText)
+			}
+		})
+		req.send()
+	}
+	function post(url,data,callback){
+		var req=new XMLHttpRequest()
+		req.open('POST',url)
+		req.addEventListener('load',function(){
+			try{
+				callback(JSON.parse(req.responseText))
+			}catch(e){
+				callback(req.responseText)
+			}
+		})
+		req.send(data)
+	}
+</script>
+</html>
